@@ -9,42 +9,23 @@ import { Board, Task } from './board.model';
   providedIn: 'root'
 })
 export class BoardService {
+  constructor(private afAuth: AngularFireAuth, private db: AngularFirestore) {}
 
-  constructor(private afAuth: AngularFireAuth, private db: AngularFirestore) { }
-
-  // Creates a new board for the current user
+  /**
+   * Creates a new board for the current user
+   */
   async createBoard(data: Board) {
     const user = await this.afAuth.currentUser;
     return this.db.collection('boards').add({
       ...data,
       uid: user.uid,
-      tasks: [{description: 'Basic Desc', label: 'yellow'}]
+      tasks: [{ description: 'Hello!', label: 'yellow' }]
     });
   }
 
-  // Deleting a board for a current user
-  deleteBoard(boardID: string){
-    return this.db.collection('boards')
-     .doc(boardID)
-      .delete();
-  }
-
-  // Updating the task array
-  updateTask(boardID: string, tasks: Task[]){
-    return this.db
-      .collection('boards')
-      .doc(boardID)
-      .update({tasks});
-  }
-
-  removeTask(boardID: string, task: Task){
-    return this.db
-      .collection('boards')
-      .doc(boardID)
-      .update({tasks: firebase.firestore.FieldValue.arrayRemove(task)});
-  }
-
-
+  /**
+   * Get all boards owned by current user
+   */
   getUserBoards() {
     return this.afAuth.authState.pipe(
       switchMap(user => {
@@ -57,10 +38,14 @@ export class BoardService {
         } else {
           return [];
         }
-      })
+      }),
+      // map(boards => boards.sort((a, b) => a.priority - b.priority))
     );
   }
 
+  /**
+   * Run a batch write to change the priority of each board for sorting
+   */
   sortBoards(boards: Board[]) {
     const db = firebase.firestore();
     const batch = db.batch();
@@ -69,4 +54,35 @@ export class BoardService {
     batch.commit();
   }
 
+  /**
+   * Delete board
+   */
+  deleteBoard(boardId: string) {
+    return this.db
+      .collection('boards')
+      .doc(boardId)
+      .delete();
+  }
+
+  /**
+   * Updates the tasks on board
+   */
+  updateTasks(boardId: string, tasks: Task[]) {
+    return this.db
+      .collection('boards')
+      .doc(boardId)
+      .update({ tasks });
+  }
+
+  /**
+   * Remove a specifc task from the board
+   */
+  removeTask(boardId: string, task: Task) {
+    return this.db
+      .collection('boards')
+      .doc(boardId)
+      .update({
+        tasks: firebase.firestore.FieldValue.arrayRemove(task)
+      });
+  }
 }
