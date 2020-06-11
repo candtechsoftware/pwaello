@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "pwaello-912fc": {
+      "hosting": {
+        "trello-pwa": [
+          "pwaello-912fc"
+        ]
+      }
+    }
+  }
+}

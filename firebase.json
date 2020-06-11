@@ -1,0 +1,19 @@
+{
+  "hosting": [
+    {
+      "target": "trello-pwa",
+      "public": "dist/trello-pwa",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ]
+}
